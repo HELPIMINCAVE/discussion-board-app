@@ -1,6 +1,8 @@
 from flask import Flask
 from config import Config
 from models import *
+import routes
+
 
 def create_app():
     app = Flask(__name__)
@@ -11,7 +13,10 @@ def create_app():
     with app.app_context():
         db.create_all()
         
-        import routes
         app.register_blueprint(routes.bp)
     
     return app
+
+if __name__ == '__main__':
+    app = create_app()
+    app.run(port=6767, debug=True)
