@@ -1,4 +1,8 @@
-.venv/
-__pycache__/
+# Environment Variables
 .env
 .DS_Store
+
+# Python/Github Folders
+.venv/
+__pycache__/
+.idea/
