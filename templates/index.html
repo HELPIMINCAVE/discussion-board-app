@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+
+{% block title %}Home Feed - Discussion Board{% endblock %}
+
+{% block content %}
+    <h1>Discussion Threads</h1>
+
+    {% if posts %}
+        {% for post in posts %}
+            <div class="card">
+                <h2 style="margin-top: 0;">
+                    <a href="{{ url_for('main.view_single_thread', post_id=post.id) }}">{{ post.title }}</a>
+                </h2>
+                <div class="meta">
+                    Posted by <strong>{{ post.author.username if post.author else 'User #' ~ post.user_id }}</strong>
+                    on {{ post.created_at.strftime('%Y, %B %d, %H:%M UTC') }}
+                    | <strong>{{ post.replies|length }}</strong> {% if post.replies|length == 1 %}reply{% else %}replies{% endif %}
+                </div>
+                <p>{{ post.content[:200] }}{% if post.content|length > 200 %}...{% endif %}</p>
+            </div>
+        {% endfor %}
+    {% else %}
+        <div class="card">
+            <p>No threads posted yet. <a href="{{ url_for('main.create_new_thread') }}">Be the first to create one!</a></p>
+        </div>
+    {% endif %}
+{% endblock %}

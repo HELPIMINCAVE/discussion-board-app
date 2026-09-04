@@ -1,6 +1,7 @@
 # Environment Variables
 .env
 .DS_Store
+*.db
 
 # Python/Github Folders
 .venv/

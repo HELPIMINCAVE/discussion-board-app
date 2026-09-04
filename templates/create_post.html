@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+
+{% block title %}Create Thread - Discussion Board{% endblock %}
+
+{% block content %}
+    <h1>Create New Thread</h1>
+
+    {% if error %}
+        <div class="error">{{ error }}</div>
+    {% endif %}
+
+    <form action="{{ url_for('main.create_new_thread') }}" method="POST">
+        <div>
+            <label for="user_id">Author User ID:</label>
+            <input type="number" id="user_id" name="user_id" placeholder="Enter User ID (e.g. 1)" value="1" required>
+        </div>
+        <div>
+            <label for="title">Thread Title:</label>
+            <input type="text" id="title" name="title" placeholder="What is your thread about?" required>
+        </div>
+        <div>
+            <label for="content">Main Content:</label>
+            <textarea id="content" name="content" placeholder="Write your post details here..." required></textarea>
+        </div>
+        <button type="submit">Publish Thread</button>
+    </form>
+{% endblock %}

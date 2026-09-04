@@ -1,0 +1,50 @@
+{% extends "base.html" %}
+
+{% block title %}{{ post.title }} - Discussion Board{% endblock %}
+
+{% block content %}
+    <!-- Main Thread Article -->
+    <article class="card" style="background: #fff; border-left: 4px solid #0066cc;">
+        <h1 style="margin-top: 0;">{{ post.title }}</h1>
+        <div class="meta">
+            Posted by <strong>{{ post.author.username if post.author else 'User #' ~ post.user_id }}</strong>
+            on {{ post.created_at.strftime('%Y, %B %d, %H:%M UTC') }}
+        </div>
+        <div style="white-space: pre-line;">{{ post.content }}</div>
+    </article>
+
+    <!-- Replies List -->
+    <section>
+        <h3>Replies ({{ post.replies|length }})</h3>
+
+        {% if post.replies %}
+            {% for reply in post.replies %}
+                <div class="card">
+                    <div class="meta">
+                        <strong>{{ reply.author.username if reply.author else 'User #' ~ reply.user_id }}</strong>
+                        replied on {{ reply.created_at.strftime('%Y, %B %d, %H:%M UTC') }}
+                    </div>
+                    <div style="white-space: pre-line;">{{ reply.content }}</div>
+                </div>
+            {% endfor %}
+        {% else %}
+            <p><em>No replies yet. Start the conversation below!</em></p>
+        {% endif %}
+    </section>
+
+    <!-- Reply Form -->
+    <section class="card" style="margin-top: 25px;">
+        <h3 style="margin-top: 0;">Leave a Reply</h3>
+        <form action="{{ url_for('main.post_thread_reply', post_id=post.id) }}" method="POST">
+            <div>
+                <label for="user_id">Your User ID:</label>
+                <input type="number" id="user_id" name="user_id" placeholder="Enter User ID (e.g. 1)" value="1" required>
+            </div>
+            <div>
+                <label for="content">Reply Content:</label>
+                <textarea id="content" name="content" placeholder="Write your reply here..." required></textarea>
+            </div>
+            <button type="submit">Submit Reply</button>
+        </form>
+    </section>
+{% endblock %}

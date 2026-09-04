@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Discussion Board{% endblock %}</title>
+    <style>
+        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; max-width: 800px; margin: 0 auto; padding: 20px; line-height: 1.6; color: #333; }
+        nav { margin-bottom: 25px; padding-bottom: 12px; border-bottom: 2px solid #eaeaea; }
+        nav a { margin-right: 18px; text-decoration: none; color: #0066cc; font-weight: bold; }
+        nav a:hover { text-decoration: underline; }
+        .card { border: 1px solid #e0e0e0; padding: 18px; margin-bottom: 16px; border-radius: 6px; background: #fafafa; }
+        .meta { font-size: 0.85em; color: #666; margin-bottom: 10px; }
+        .error { color: #d9534f; background: #fdf2f2; border: 1px solid #f5c6cb; padding: 12px; margin-bottom: 15px; border-radius: 4px; }
+        form div { margin-bottom: 15px; }
+        label { display: block; margin-bottom: 6px; font-weight: 600; }
+        input[type="text"], input[type="number"], textarea { width: 100%; padding: 9px; box-sizing: border-box; border: 1px solid #ccc; border-radius: 4px; font-size: 1rem; }
+        textarea { height: 120px; resize: vertical; }
+        button { padding: 10px 18px; background: #0066cc; color: #fff; border: none; border-radius: 4px; font-size: 1rem; cursor: pointer; }
+        button:hover { background: #0052a3; }
+    </style>
+</head>
+<body>
+    <nav>
+        <a href="{{ url_for('main.view_home_feed') }}">Home Feed</a>
+        <a href="{{ url_for('main.create_new_thread') }}">+ Create New Thread</a>
+    </nav>
+    <main>
+        {% block content %}{% endblock %}
+    </main>
+</body>
+</html>
