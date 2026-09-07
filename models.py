@@ -1,53 +1,45 @@
-import datetime
 from flask_sqlalchemy import SQLAlchemy
+from flask_login import UserMixin
+from werkzeug.security import generate_password_hash, check_password_hash
+from datetime import datetime, timezone
 
 db = SQLAlchemy()
 
-
-# 1. User Model
-class User(db.Model):
+class User(UserMixin, db.Model):
     __tablename__ = 'users'
     
     id = db.Column(db.Integer, primary_key=True)
-    username = db.Column(db.String(50), unique=True, nullable=False)
+    username = db.Column(db.String(80), unique=True, nullable=False)
     email = db.Column(db.String(120), unique=True, nullable=False)
+    password_hash = db.Column(db.String(256), nullable=False)
     
-    # Allows accessing user.posts and user.replies
-    posts = db.relationship('Post', backref='author', cascade='all, delete-orphan', lazy=True)
-    replies = db.relationship('Reply', backref='author', cascade='all, delete-orphan', lazy=True)
+    posts = db.relationship('Post', backref='author', lazy=True)
+    replies = db.relationship('Reply', backref='author', lazy=True)
+    
+    def set_password(self, password):
+        self.password_hash = generate_password_hash(password)
+    
+    def check_password(self, password):
+        return check_password_hash(self.password_hash, password)
 
 
-# 2. Post Model (Discussion Threads)
 class Post(db.Model):
     __tablename__ = 'posts'
     
     id = db.Column(db.Integer, primary_key=True)
-    title = db.Column(db.String(100), nullable=False)
+    title = db.Column(db.String(200), nullable=False)
     content = db.Column(db.Text, nullable=False)
-    
-    created_at = db.Column(
-        db.DateTime(timezone=True),
-        default=lambda: datetime.datetime.now(datetime.timezone.utc)
-    )
-    
-    # Foreign Key linking to author
+    created_at = db.Column(db.DateTime, default=lambda: datetime.now(timezone.utc))
     user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
     
-    # Relational link to all replies under this thread
-    replies = db.relationship('Reply', backref='parent_post', cascade='all, delete-orphan', lazy=True)
+    replies = db.relationship('Reply', backref='post', lazy=True, cascade="all, delete-orphan")
 
-# 3. Reply Model (Thread Responses)
+
 class Reply(db.Model):
     __tablename__ = 'replies'
     
     id = db.Column(db.Integer, primary_key=True)
     content = db.Column(db.Text, nullable=False)
-    
-    created_at = db.Column(
-        db.DateTime(timezone=True),
-        default=lambda: datetime.datetime.now(datetime.timezone.utc)
-    )
-    
-    # Foreign Keys linking to author and parent thread
+    created_at = db.Column(db.DateTime, default=lambda: datetime.now(timezone.utc))
     user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
     post_id = db.Column(db.Integer, db.ForeignKey('posts.id'), nullable=False)

@@ -2,6 +2,7 @@
 .env
 .DS_Store
 *.db
+seed.py
 
 # Python/Github Folders
 .venv/
