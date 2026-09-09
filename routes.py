@@ -9,26 +9,31 @@ main = Blueprint('main', __name__)
 def register():
     if current_user.is_authenticated:
         return redirect(url_for('main.view_home_feed'))
-    
+
     if request.method == 'POST':
         username = request.form.get('username', '').strip()
         email = request.form.get('email', '').strip()
         password = request.form.get('password', '')
-        
+
         if not username or not email or not password:
             return render_template('register.html', error='All fields are required.'), 400
-        
+
+        # Check for duplicate username
         if db.session.scalar(db.select(User).filter_by(username=username)):
             return render_template('register.html', error='Username already taken.'), 400
-        
+
+        # Check for duplicate email
+        if db.session.scalar(db.select(User).filter_by(email=email)):
+            return render_template('register.html', error='Email is already registered.'), 400
+
         user = User(username=username, email=email)
         user.set_password(password)
         db.session.add(user)
         db.session.commit()
-        
+
         login_user(user)
         return redirect(url_for('main.view_home_feed'))
-    
+
     return render_template('register.html')
 
 
