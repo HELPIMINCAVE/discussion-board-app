@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+{% block title %}Edit Reply - Discussion Board{% endblock %}
+{% block content %}
+    <h1>Edit Reply</h1>
+    {% if error %}
+        <div class="error">{{ error }}</div>
+    {% endif %}
+    <form action="{{ url_for('main.edit_reply', reply_id=reply.id) }}" method="POST">
+        <div>
+            <label for="content">Reply Content:</label>
+            <textarea id="content" name="content" required>{{ reply.content }}</textarea>
+        </div>
+        <button type="submit">Update Reply</button>
+        <a href="{{ url_for('main.view_single_thread', post_id=reply.post_id) }}" style="margin-left: 15px;">Cancel</a>
+    </form>
+{% endblock %}

@@ -111,5 +111,84 @@ def post_thread_reply(post_id):
     return redirect(url_for('main.view_single_thread', post_id=post_id))
 
 
+@main.route('/post/<int:post_id>/edit', methods=['GET', 'POST'])
+@login_required
+def edit_thread(post_id):
+    post = db.get_or_404(Post, post_id)
+    
+    # Authorization check: only author can edit
+    if post.user_id != current_user.id:
+        abort(403)
+    
+    if request.method == 'POST':
+        title = request.form.get('title', '').strip()
+        content = request.form.get('content', '').strip()
+        
+        if not title or not content:
+            return render_template('edit_post.html', post=post, error='Title and content required.'), 400
+        
+        post.title = title
+        post.content = content
+        db.session.commit()
+        
+        return redirect(url_for('main.view_single_thread', post_id=post.id))
+    
+    return render_template('edit_post.html', post=post)
+
+
+@main.route('/post/<int:post_id>/delete', methods=['POST'])
+@login_required
+def delete_thread(post_id):
+    post = db.get_or_404(Post, post_id)
+    
+    # Authorization check: only author can delete
+    if post.user_id != current_user.id:
+        abort(403)
+    
+    db.session.delete(post)
+    db.session.commit()
+    
+    return redirect(url_for('main.view_home_feed'))
+
+
+@main.route('/reply/<int:reply_id>/edit', methods=['GET', 'POST'])
+@login_required
+def edit_reply(reply_id):
+    reply = db.get_or_404(Reply, reply_id)
+    
+    # Authorization check: only author can edit
+    if reply.user_id != current_user.id:
+        abort(403)
+    
+    if request.method == 'POST':
+        content = request.form.get('content', '').strip()
+        
+        if not content:
+            return render_template('edit_reply.html', reply=reply, error='Reply content required.'), 400
+        
+        reply.content = content
+        db.session.commit()
+        
+        return redirect(url_for('main.view_single_thread', post_id=reply.post_id))
+    
+    return render_template('edit_reply.html', reply=reply)
+
+
+@main.route('/reply/<int:reply_id>/delete', methods=['POST'])
+@login_required
+def delete_reply(reply_id):
+    reply = db.get_or_404(Reply, reply_id)
+    
+    # Authorization check: only author can delete
+    if reply.user_id != current_user.id:
+        abort(403)
+    
+    target_post_id = reply.post_id
+    db.session.delete(reply)
+    db.session.commit()
+    
+    return redirect(url_for('main.view_single_thread', post_id=target_post_id))
+
+
 def init_app(app):
     app.register_blueprint(main)

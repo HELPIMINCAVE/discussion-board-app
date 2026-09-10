@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+{% block title %}Edit Thread - Discussion Board{% endblock %}
+{% block content %}
+    <h1>Edit Thread</h1>
+    {% if error %}
+        <div class="error">{{ error }}</div>
+    {% endif %}
+    <form action="{{ url_for('main.edit_thread', post_id=post.id) }}" method="POST">
+        <div>
+            <label for="title">Thread Title:</label>
+            <input type="text" id="title" name="title" value="{{ post.title }}" required>
+        </div>
+        <div>
+            <label for="content">Main Content:</label>
+            <textarea id="content" name="content" required>{{ post.content }}</textarea>
+        </div>
+        <button type="submit">Save Changes</button>
+        <a href="{{ url_for('main.view_single_thread', post_id=post.id) }}" style="margin-left: 15px;">Cancel</a>
+    </form>
+{% endblock %}
