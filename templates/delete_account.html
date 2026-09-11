@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+{% block title %}Delete Account - Discussion Board{% endblock %}
+{% block content %}
+    <h1>Delete Account</h1>
+    <div class="card" style="border-left: 4px solid #d9534f; background: #fff5f5;">
+        <h3 style="margin-top: 0; color: #d9534f;">Are you sure?</h3>
+        <p>Deactivating your account will anonymize your profile. Your threads and replies will remain published under an anonymized system tag (e.g., <code>deleted-user-aB8#x</code>).</p>
+        <p>Your real username and email will be completely removed from our system.</p>
+
+        <form action="{{ url_for('main.delete_account') }}" method="POST" onsubmit="return confirm('This action cannot be undone. Permanently delete your account?');">
+            <button type="submit" style="background: #d9534f;">Permanently Delete Account</button>
+            <a href="{{ url_for('main.view_home_feed') }}" style="margin-left: 15px;">Cancel</a>
+        </form>
+    </div>
+{% endblock %}

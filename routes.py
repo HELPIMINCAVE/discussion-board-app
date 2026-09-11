@@ -1,9 +1,23 @@
 from flask import Blueprint, render_template, request, redirect, url_for, abort
 from flask_login import login_user, logout_user, login_required, current_user
 from models import db, User, Post, Reply
+import random, string
 
 main = Blueprint('main', __name__)
 
+
+def generate_unique_deleted_username():
+    """Generates a unique 'deleted-user-<specialcode>' username with a 5-10 character code."""
+    allowed_chars = string.ascii_letters + string.digits + "!@#$%^&*"
+    while True:
+        code_length = random.randint(5, 10)
+        special_code = ''.join(random.choice(allowed_chars) for _ in range(code_length))
+        candidate_username = f"deleted-user-{special_code}"
+        
+        # Check if code collision exists in database
+        existing = db.session.scalar(db.select(User).filter_by(username=candidate_username))
+        if not existing:
+            return candidate_username, special_code
 
 @main.route('/register', methods=['GET', 'POST'])
 def register():
@@ -173,6 +187,24 @@ def edit_reply(reply_id):
     
     return render_template('edit_reply.html', reply=reply)
 
+
+@main.route('/account/delete', methods=['GET', 'POST'])
+@login_required
+def delete_account():
+    if request.method == 'POST':
+        new_username, special_code = generate_unique_deleted_username()
+        
+        # Anonymize account details
+        current_user.username = new_username
+        current_user.email = f"deleted-{special_code}@deleted.local"
+        current_user.password_hash = "ACCOUNT_DEACTIVATED"
+        
+        db.session.commit()
+        logout_user()
+        
+        return redirect(url_for('main.view_home_feed'))
+    
+    return render_template('delete_account.html')
 
 @main.route('/reply/<int:reply_id>/delete', methods=['POST'])
 @login_required
